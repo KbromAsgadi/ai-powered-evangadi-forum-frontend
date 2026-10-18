@@ -1,12 +1,17 @@
+
 import axios from 'axios';
+
+// Define the API URL OUTSIDE axios.create()
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  'https://ai-powered-evangadi-forum-backend-ydsq.onrender.com/api';
 
 /**
  * Configured axios instance for API communication.
  */
 const apiClient = axios.create({
-  const API_URL = import.meta.env.VITE_API_URL || 'https://ai-powered-evangadi-forum-backend-ydsq.onrender.com/api';
-  // Generous default: AI endpoints can legitimately take 30-60s on free-tier
-  // quota backoff. Individual calls may override with their own timeout.
+  baseURL: API_URL,
+  // AI endpoints can take longer on free-tier hosting.
   timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
@@ -14,42 +19,37 @@ const apiClient = axios.create({
 });
 
 /**
- * Request interceptor to attach the JWT token to headers.
+ * Attach the JWT token to requests.
  */
 apiClient.interceptors.request.use(
-  config => {
+  (config) => {
     const token = localStorage.getItem('token');
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
-  error => {
-    return Promise.reject(error);
-  },
+  (error) => Promise.reject(error),
 );
 
 /**
- * Response interceptor to handle global 401 unauthorized errors.
+ * Handle global 401 unauthorized errors.
  */
 apiClient.interceptors.response.use(
-  response => {
-    return response;
-  },
-  error => {
-    // Skip global 401 redirect for auth endpoints so components can handle login/register errors
+  (response) => response,
+  (error) => {
     const isAuthEndpoint =
       error.config?.url?.includes('/api/auth/login') ||
       error.config?.url?.includes('/api/auth/register');
 
     if (error.response?.status === 401 && !isAuthEndpoint) {
-      // Clear authentication data
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-
-      // Redirect to login page
       window.location.href = '/auth';
     }
+
     return Promise.reject(error);
   },
 );
