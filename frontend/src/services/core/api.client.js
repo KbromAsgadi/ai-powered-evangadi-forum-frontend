@@ -4,7 +4,7 @@ import axios from 'axios';
 // Define the API URL OUTSIDE axios.create()
 const API_URL =
   import.meta.env.VITE_API_URL ||
-  'https://ai-powered-evangadi-forum-backend-ydsq.onrender.com/api';
+  'https://ai-powered-evangadi-forum-backend-ydsq.onrender.com';
 
 /**
  * Configured axios instance for API communication.
