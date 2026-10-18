@@ -4,7 +4,7 @@ import axios from 'axios';
  * Configured axios instance for API communication.
  */
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3777',
+  const API_URL = import.meta.env.VITE_API_URL || 'API_URL',
   // Generous default: AI endpoints can legitimately take 30-60s on free-tier
   // quota backoff. Individual calls may override with their own timeout.
   timeout: 60000,
